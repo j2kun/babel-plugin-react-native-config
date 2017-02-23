@@ -33,7 +33,7 @@ module.exports = function (options) {
 
   return {
     visitor: {
-      Program: function Program(path) {
+      Program: function Program(path, state) {
         var import_name;
 
         if (path.node.body) {
@@ -49,7 +49,8 @@ module.exports = function (options) {
         }
 
         if (import_name) {
-          path.traverse(updateConfigReferenceVisitor, { import_name });
+          state.import_name = import_name;
+          path.traverse(updateConfigReferenceVisitor, state);
         }
       }
     }
