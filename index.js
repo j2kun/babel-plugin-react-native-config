@@ -9,7 +9,7 @@ module.exports = function (options) {
     MemberExpression(path, state) {
       // If Config.VALUE is on the LHS of an assignment statement, ignore.
       // However, note that doing such could result in differing behavior
-      // between Transpiled and compiled use of react-native-config, because
+      // between transpiled and compiled use of react-native-config, because
       // "assigned" Config values would be ignored as all references would be
       // transpiled to raw values.
       if(t.isAssignmentExpression(path.parent) && path.parent.left == path.node) {
@@ -48,7 +48,9 @@ module.exports = function (options) {
           });
         }
 
-        path.traverse(updateConfigReferenceVisitor, { import_name });
+        if (import_name) {
+          path.traverse(updateConfigReferenceVisitor, { import_name });
+        }
       }
     }
   };
