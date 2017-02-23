@@ -37,10 +37,72 @@ var NAVBAR_HEIGHT = '65' || 64;
 var ENABLE_FUN = Boolean(undefined);  // undefined
 ```
 
+## Setup
+
+I will run through the setup of this plugin in a fresh React Native project using React Native 0.41.2.
+
+```
+react-native init TestPlugin
+cd TestPlugin
+npm install --save react-native-config
+npm install --save-dev babel-plugin-react-native-config
+```
+
+Create `.env` with
+
+```
+API_URL=hello
+```
+
+And update `.babelrc` to have
+
+```
+{
+  "presets": [
+    "react-native"
+  ],
+  "env": {
+    "development": {
+      "plugins": [
+         ["babel-plugin-react-native-config", { path: "../../../.env" }]
+      ]
+    }
+  }  
+}
+```
+
+The reason for the path nonsense is because the react-native packager runs in `TestPlugin/node_modules/react-native/packager`, which seems like a bad design decision to me, but I don't work for an organization bent on world domination, so what do I know?
+
+Modify `index.ios.js` to include
+
+```
+import Config from 'react-native-config';
+
+...
+
+export default class TestPlugin extends Component {
+  render() {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.welcome}>
+          Welcome to React Native!
+        </Text>
+        <Text style={styles.instructions}>
+          API_URL = { Config.API_URL }
+        </Text>
+      </View>
+    );
+  }
+}
+```
+
+And then run `react-native run-ios` to see `hello` show up in the simulator.
+
+Now change the variable in `.env`, and refresh the code. Uh oh! It didn't change! This is because the react-packager only watches for javascript code changes before re-transpiling. Until I can figure out [a principled way](http://stackoverflow.com/questions/42212314/tell-react-native-packager-to-watch-a-non-javascript-file) to re-transpile when a specific file changes, you have to change both `.env` and the file that imports `react-native-config`. Adding or removing a blank line will do the trick.
 
 ## Tests
 
-As of now the tests are manual, because this project is still a work in progress. To test, run `babel` manually, or use one of my provided test source files in `tests`
+As of now the tests are manual, because this project is still a work in progress. To test, run `babel` manually, or use one of my provided test source files in `tests`. If unit testing in javascript weren't so awful, I'd consider writing automated tests. But as it stands this is the simplest and clearest way to see what the plugin actually does to code. If you disagree, we can take it outside.
 
 ```
 babel --plugins "../index.js" tests/test3.js -o tests/test3.out.js
