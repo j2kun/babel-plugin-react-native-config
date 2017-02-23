@@ -71,15 +71,15 @@ And update `.babelrc` to have
 }
 ```
 
-Note that the `path` config option is a problem because the filesystem lookup is relative to the working directory of the react-native package manager, which can be different depending on your setup. For example, when running `react-native run-ios`, the packager runs in `node_modules/react-native/packager`, which seems like a bad design decision to me, but I don't work for an organization bent on world domination, so what do I know? If you run the packager manually, i.e. via `react-native start` (which is the only way to get command line flags into the packager), the working directory will be different.
+Note that the `envfile` config option is a problem because the filesystem lookup is relative to the working directory of the react-native package manager, which can be different depending on your setup. For example, when running `react-native run-ios`, the packager runs in `node_modules/react-native/packager`, which seems like a bad design decision to me, but I don't work for an organization bent on world domination, so what do I know? If you run the packager manually, i.e. via `react-native start` (which is the only way to get command line flags into the packager), the working directory will be different.
 
-So after all that tofu, this plugin will start by looking for the `.env` file in the current working directory, whatever that is. If it's not found, it will recursively look in parent directories until either
+So after all that tofu, this plugin will start by looking for the `envfile` in the current working directory, whatever that is. If it's not found, it will recursively look in parent directories until either
 
  1. The root of the filesystem is reached.
  2. A directory containing `.babelrc` is found.
- 3. A file contianing `.env` is found.
+ 3. A file containing `envfile` is found.
 
-You can override the `.babelrc` setting by putting `ENVFILE` in the environment of the process running babel.
+You can override the `envfile` config by setting `ENVFILE` in the environment of the process running babel.
 
 Now modify `index.ios.js` to include
 
