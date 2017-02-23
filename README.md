@@ -36,3 +36,12 @@ var FONT = 'baz' || 'Helvetica';
 var NAVBAR_HEIGHT = '65' || 64;
 var ENABLE_FUN = Boolean(undefined);  // undefined
 ```
+
+
+## Tests
+
+As of now the tests are manual, because this project is still a work in progress. To test, run `babel` manually, or use one of my provided test source files in `tests`
+
+```
+babel --plugins "../index.js" tests/test3.js -o tests/test3.out.js
+```
