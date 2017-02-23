@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-native-config",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Hot loading for react-native-config",
   "main": "index.js",
   "scripts": {
