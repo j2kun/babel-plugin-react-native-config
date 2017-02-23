@@ -1,5 +1,8 @@
 "use strict";
 
+const fspath = require('path');
+const fs = require('fs');
+
 var dotenv;
 
 module.exports = function (options) {
@@ -20,7 +23,23 @@ module.exports = function (options) {
       var property = path.node.property;
       if (object.name == this.import_name) {
         if (!dotenv) {
-          dotenv = require('dotenv').config(state.opts);
+          var filename = '.env';
+          if (process.env.ENVFILE) {
+            filename = process.env.ENVFILE;
+          } else if (state.opts && state.opts.envfile) {
+            filename = state.opts.envfile;
+          }
+
+          var dir = process.cwd();
+          var stopIfFound = '.babelrc';
+
+          while (!fs.existsSync(fspath.join(dir, stopIfFound)) && 
+                 !fs.existsSync(fspath.join(dir, filename)) && dir != '/') {
+            dir = fspath.dirname(dir);
+          }
+
+          var finalPath = fspath.join(dir, filename);
+          dotenv = require('dotenv').config({ "path": finalPath });
         }
 
         var name = property.name;
