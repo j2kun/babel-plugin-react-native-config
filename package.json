@@ -18,7 +18,7 @@
     "react-native-config",
     "dotenv"
   ],
-  "author": "Jeremy Kun",
+  "author": "Jeremy Kun (http://jeremykun.com)",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/j2kun/babel-plugin-react-native-config/issues"
