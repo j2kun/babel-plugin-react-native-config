@@ -2,8 +2,9 @@
 
 const fspath = require('path');
 const fs = require('fs');
+const dotenv = require('dotenv');
 
-var dotenv;
+var finalPath;
 
 module.exports = function (options) {
   var t = options.types;
@@ -22,7 +23,7 @@ module.exports = function (options) {
       var object = path.node.object;
       var property = path.node.property;
       if (object.name == this.import_name) {
-        if (!dotenv) {
+        if (!finalPath) {
           var filename = '.env';
           if (process.env.ENVFILE) {
             filename = process.env.ENVFILE;
@@ -33,18 +34,21 @@ module.exports = function (options) {
           var dir = process.cwd();
           var stopIfFound = '.babelrc';
 
-          while (!fs.existsSync(fspath.join(dir, stopIfFound)) && 
+          while (!fs.existsSync(fspath.join(dir, stopIfFound)) &&
                  !fs.existsSync(fspath.join(dir, filename)) && dir != '/') {
             dir = fspath.dirname(dir);
           }
 
-          var finalPath = fspath.join(dir, filename);
-          dotenv = require('dotenv').config({ "path": finalPath });
+          finalPath = fspath.join(dir, filename);
         }
+
+        var buffer = fs.readFileSync(finalPath);
+        var parsedEnv = dotenv.parse(buffer);
 
         var name = property.name;
         var overrideEnv = state.opts && state.opts.env && name in state.opts.env;
-        var replaceValue = overrideEnv ? state.opts.env[name] : process.env[name];
+        var replaceValue = overrideEnv ? state.opts.env[name] : parsedEnv[name];
+
         path.replaceWith(t.valueToNode(replaceValue));
       }
     }
@@ -57,7 +61,7 @@ module.exports = function (options) {
 
         if (path.node.body) {
           path.node.body.forEach(function(childNode) {
-            if (childNode.type == "ImportDeclaration" && childNode.source.value == "react-native-config" && 
+            if (childNode.type == "ImportDeclaration" && childNode.source.value == "react-native-config" &&
                 childNode.specifiers && childNode.specifiers.length > 0) {
               var specifier = childNode.specifiers[0];
               if (specifier && specifier.type == "ImportDefaultSpecifier") {
